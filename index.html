@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnovateTech Summit 2026</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            letter-spacing: 1px;
+        }
+        header p {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        .search-container {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .search-container label {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .search-container input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            min-width: 250px;
+        }
+        .schedule {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .schedule-header {
+            background-color: #34495e;
+            color: #ecf0f1;
+            padding: 15px 20px;
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+        }
+        .talk-item, .break-item {
+            padding: 18px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .talk-item:hover, .break-item:hover {
+            background-color: #f9f9f9;
+        }
+        .talk-item:last-child, .break-item:last-child {
+            border-bottom: none;
+        }
+        .time {
+            font-weight: bold;
+            color: #2c3e50;
+            min-width: 120px; /* Fixed width for time */
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .details .title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        .details .speakers, .details .categories {
+            font-size: 0.9em;
+            color: #555;
+            opacity: 0.8;
+        }
+        .break-item .details .title {
+            font-weight: bold;
+            color: #e67e22; /* Orange for breaks */
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 700px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #333;
+            text-decoration: none;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .modal-content .speakers, .modal-content .categories, .modal-content .description {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+        .modal-content .categories ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .modal-content .categories li {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            header h1 {
+                font-size: 2em;
+            }
+            header p {
+                font-size: 1em;
+            }
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-container input[type="text"] {
+                min-width: unset;
+            }
+            .talk-item, .break-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px 20px;
+            }
+            .time {
+                margin-bottom: 10px;
+                min-width: unset;
+            }
+            .modal-content {
+                width: 90%;
+                margin-top: 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>InnovateTech Summit 2026</h1>
+            <p>Thursday, February 26, 2026</p>
+        </header>
+
+        <div class="search-container">
+            <label for="category-search">Filter by Category:</label>
+            <input type="text" id="category-search" placeholder="e.g., AI, Node.js, DevOps">
+        </div>
+
+        <div class="schedule">
+            <div class="schedule-header">Event Schedule</div>
+            <div id="schedule-list">
+                <!-- Schedule items will be loaded here by JavaScript -->
+            </div>
+        </div>
+
+        <div id="talk-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2 id="modal-title"></h2>
+                <p class="speakers"><strong>Speakers:</strong> <span id="modal-speakers"></span></p>
+                <p class="description"><strong>Description:</strong> <span id="modal-description"></span></p>
+                <p class="categories">
+                    <strong>Categories:</strong>
+                    <ul id="modal-categories"></ul>
+                </p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            © 2026 InnovateTech Summit. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Placeholder Data ---
+            const talksData = [
+                {
+                    id: 1,
+                    title: "The Future of AI in Web Development",
+                    speakers: ["Dr. Evelyn Reed"],
+                    categories: ["AI", "Web Development", "Future Tech"],
+                    description: "Explore how Artificial Intelligence is revolutionizing web development, from code generation to personalized user experiences. This talk will cover current trends and future possibilities.",
+                    startTime: "10:00 AM",
+                    endTime: "11:00 AM"
+                },
+                {
+                    id: 'transition1',
+                    title: "Transition",
+                    speakers: [],
+                    categories: [],
+                    description: "Short break for networking and moving to the next session.",
+                    startTime: "11:00 AM",
+                    endTime: "11:10 AM"
+                },
+                {
+                    id: 2,
+                    title: "Mastering Serverless Architectures with Node.js",
+                    speakers: ["Alex Johnson", "Maria Garcia"],
+                    categories: ["Node.js", "Backend", "Serverless"],
+                    description: "A practical guide to building robust and scalable serverless applications using Node.js. Learn about AWS Lambda, Azure Functions, and best practices for managing your serverless infrastructure.",
+                    startTime: "11:10 AM",
+                    endTime: "12:10 PM"
+                },
+                {
+                    id: 'transition2',
+                    title: "Transition",
+                    speakers: [],
+                    categories: [],
+                    description: "Short break for networking and moving to the next session.",
+                    startTime: "12:10 PM",
+                    endTime: "12:20 PM"
+                },
+                {
+                    id: 3,
+                    title: "Frontend Performance Optimization Techniques",
+                    speakers: ["Sarah Chen"],
+                    categories: ["Frontend", "Performance", "Web Development"],
+                    description: "Discover essential techniques to significantly improve your website's loading speed and responsiveness. This session covers image optimization, code splitting, lazy loading, and more.",
+                    startTime: "12:20 PM",
+                    endTime: "1:20 PM"
+                },
+                {
+                    id: 'lunch',
+                    title: "Lunch Break",
+                    speakers: [],
+                    categories: [],
+                    description: "Enjoy lunch and network with fellow attendees.",
+                    startTime: "1:20 PM",
+                    endTime: "2:20 PM"
+                },
+                {
+                    id: 4,
+                    title: "Building Scalable Microservices with Go",
+                    speakers: ["Ben Carter"],
+                    categories: ["Go", "Backend", "Microservices", "Cloud Native"],
+                    description: "Learn the principles of designing, building, and deploying scalable microservices using the Go programming language. Covers concurrency, communication patterns, and tooling.",
+                    startTime: "2:20 PM",
+                    endTime: "3:20 PM"
+                },
+                {
+                    id: 'transition3',
+                    title: "Transition",
+                    speakers: [],
+                    categories: [],
+                    description: "Short break for networking and moving to the next session.",
+                    startTime: "3:20 PM",
+                    endTime: "3:30 PM"
+                },
+                {
+                    id: 5,
+                    title: "DevOps Best Practices for Modern Teams",
+                    speakers: ["Priya Sharma"],
+                    categories: ["DevOps", "CI/CD", "Cloud"],
+                    description: "Implement effective DevOps strategies to enhance collaboration, automate workflows, and accelerate software delivery. This talk covers CI/CD pipelines, infrastructure as code, and monitoring.",
+                    startTime: "3:30 PM",
+                    endTime: "4:30 PM"
+                },
+                {
+                    id: 'transition4',
+                    title: "Transition",
+                    speakers: [],
+                    categories: [],
+                    description: "Short break for networking and moving to the next session.",
+                    startTime: "4:30 PM",
+                    endTime: "4:40 PM"
+                },
+                {
+                    id: 6,
+                    title: "Securing Your Applications: A Practical Guide",
+                    speakers: ["David Lee", "Emily White"],
+                    categories: ["Security", "Web Development", "Best Practices"],
+                    description: "Understand common web security threats and learn practical techniques to protect your applications. Topics include OWASP Top 10, authentication, authorization, and secure coding principles.",
+                    startTime: "4:40 PM",
+                    endTime: "5:40 PM"
+                }
+            ];
+
+            const scheduleList = document.getElementById('schedule-list');
+            const searchInput = document.getElementById('category-search');
+            const modal = document.getElementById('talk-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalSpeakers = document.getElementById('modal-speakers');
+            const modalDescription = document.getElementById('modal-description');
+            const modalCategories = document.getElementById('modal-categories');
+            const closeButton = modal.querySelector('.close-button');
+
+            let allTalks = []; // To hold all scheduled items (talks and breaks)
+
+            // Function to render the schedule
+            function renderSchedule(itemsToDisplay) {
+                scheduleList.innerHTML = ''; // Clear previous list
+                itemsToDisplay.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.classList.add(item.id === 'lunch' || item.id === 'transition1' || item.id === 'transition2' || item.id === 'transition3' || item.id === 'transition4' ? 'break-item' : 'talk-item');
+                    
+                    const timeElement = document.createElement('div');
+                    timeElement.classList.add('time');
+                    timeElement.textContent = `${item.startTime} - ${item.endTime}`;
+                    
+                    const detailsElement = document.createElement('div');
+                    detailsElement.classList.add('details');
+
+                    const titleElement = document.createElement('div');
+                    titleElement.classList.add('title');
+                    titleElement.textContent = item.title;
+
+                    const speakersElement = document.createElement('div');
+                    speakersElement.classList.add('speakers');
+                    speakersElement.textContent = item.speakers.length > 0 ? `Speakers: ${item.speakers.join(', ')}` : '';
+                    
+                    const categoriesElement = document.createElement('div');
+                    categoriesElement.classList.add('categories');
+                    if (item.categories && item.categories.length > 0) {
+                        categoriesElement.textContent = `Categories: ${item.categories.join(', ')}`;
+                    }
+
+                    detailsElement.appendChild(titleElement);
+                    if (item.speakers.length > 0) {
+                         detailsElement.appendChild(speakersElement);
+                    }
+                    if (item.categories.length > 0 && item.id !== 'lunch' && !item.id.startsWith('transition')) {
+                         detailsElement.appendChild(categoriesElement);
+                    }
+
+                    itemElement.appendChild(timeElement);
+                    itemElement.appendChild(detailsElement);
+                    
+                    // Add click listener for modal
+                    if (item.id !== 'lunch' && !item.id.startsWith('transition')) {
+                        itemElement.addEventListener('click', () => showModal(item));
+                    } else {
+                        // For breaks, just display info without modal
+                        itemElement.style.cursor = 'default';
+                    }
+
+                    scheduleList.appendChild(itemElement);
+                });
+            }
+
+            // Function to show the modal with talk details
+            function showModal(talk) {
+                modalTitle.textContent = talk.title;
+                modalSpeakers.textContent = talk.speakers.join(', ');
+                modalDescription.textContent = talk.description;
+                
+                modalCategories.innerHTML = ''; // Clear previous categories
+                if (talk.categories && talk.categories.length > 0) {
+                    talk.categories.forEach(category => {
+                        const li = document.createElement('li');
+                        li.textContent = category;
+                        modalCategories.appendChild(li);
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.textContent = 'N/A';
+                    modalCategories.appendChild(li);
+                }
+
+                modal.style.display = 'block';
+            }
+
+            // Close modal functionality
+            closeButton.onclick = function() {
+                modal.style.display = 'none';
+            }
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            // Function to filter talks by category
+            function filterTalks() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                if (!searchTerm) {
+                    renderSchedule(allTalks); // Show all if search is empty
+                    return;
+                }
+
+                const filtered = allTalks.filter(item => {
+                    // Only filter actual talks, not breaks/transitions
+                    if (item.id === 'lunch' || item.id.startsWith('transition')) {
+                        return true; // Keep breaks/transitions
+                    }
+                    // Check if any of the item's categories match the search term
+                    return item.categories.some(category => category.toLowerCase().includes(searchTerm));
+                });
+                renderSchedule(filtered);
+            }
+
+            // Event listener for search input
+            searchInput.addEventListener('input', filterTalks);
+
+            // Initialize the schedule with all items
+            allTalks = talksData;
+            renderSchedule(allTalks);
+        });
+    </script>
+</body>
+</html>
